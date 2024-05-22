@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoChain Blast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(#000000, #3c2874);
+            color: #fff;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            max-width: 90%;
+            box-sizing: border-box;
+        }
+
+        .header .logo {
+            width: 50%; /* KIM WAG M KALIMUTAN PALITAN TO PLS PLS PLS PLS */
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .header .title {
+            font-size: 4vw;
+            margin: 0 0 30px;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            font-size: 4vw;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            background-color: #3c2874;
+            color: white;
+            transition: background 0.3s, transform 0.2s;
+            font-family: 'Press Start 2P', cursive;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+            .btn:hover {
+                background: linear-gradient(white, #3c2874);
+                transform: scale(1.05);
+            }
+
+        .toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            border: solid black;
+            border-radius: 50px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(white, #3c2874);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 26px;
+                width: 26px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
+
+        input:checked + .slider {
+            background: linear-gradient(#000000, #3c2874);
+        }
+
+            input:checked + .slider:before {
+                transform: translateX(26px);
+            }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px, 50px 50px;
+            z-index: -1;
+            transform: translateZ(-1px) scale(2);
+            pointer-events: none;
+        }
+
+        #stars-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: rotateStar 10s linear infinite, blink 1s infinite alternate;
+        }
+
+        @keyframes rotateStar {
+            0% {
+                transform: rotate(0deg)
+            }
+
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .header .title {
+                font-size: 3vw;
+            }
+
+            .btn {
+                font-size: 1.5vw;
+                padding: 15px 40px;
+                border: 5px solid white;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background: linear-gradient(#000000, #3c2874);
+            margin: 5% auto;
+            margin-top: 0 auto;
+            padding: 20px;
+            border: 2px solid white;
+            width: 80%;
+            color: white;
+            border-radius: 10px;
+            font-family: 'Press Start 2P', cursive;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+            .close:hover,
+            .close:focus {
+                color: white;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        .modal h2 {
+            text-align: center;
+            font-size: 2em;
+        }
+
+        .modal p {
+            font-size: 1.2em;
+            line-height: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div id="stars-container"></div>
+    <div class="container">
+        <div class="header">
+            <img src="logo.gif" alt="MoChain Blast" class="logo">
+            <div class="title"></div>
+        </div>
+        <div class="buttons">
+            <button id="startBtn" class="btn">Start</button>
+            <button id="settingsBtn" class="btn">Settings</button>
+            <button id="tutorialBtn" class="btn">Tutorial</button>
+        </div>
+        <div class="toggle">
+            <label class="switch">
+                <input type="checkbox" id="mode-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Settings</h2>
+            <h3>Choose your preferred theme:</h3>
+            <button id="lightModeBtn" class="btn">Light Mode</button>
+            <button id="darkModeBtn" class="btn">Dark Mode</button>
+        </div>
+    </div>
+
+    <div id="tutorialModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>How to Play MoChain Blast</h2>
+            <p>
+                <strong>Eliminate all of your opponent's atoms by causing chain reactions on the grid!</strong>
+            </p>
+            <h2>Tutorial</h2>
+            <p>Welcome to the Chain Reaction Game tutorial! In this game, your objective is to strategically place spheres on a grid and create chain reactions to conquer the entire grid.</p><br>
+            <h3>Objective:</h3>
+            <p>The objective of Chain Reaction is to conquer the entire grid by strategically placing spheres and triggering chain reactions.</p><br>
+            <h3>Gameplay:</h3>
+            <ol>
+                <li><strong>Placing Spheres:</strong> Click on any empty cell in the grid to place a sphere. Each player takes turns placing spheres. You can only place spheres in empty cells or cells occupied by your own spheres.</li>
+                <br>
+                <li><strong>Chain Reactions:</strong> When a cell contains enough spheres to exceed a certain threshold (typically 4), it will explode. This explosion may trigger chain reactions in adjacent cells.</li>
+                <br>
+                <li><strong>Winning the Game:</strong> The game continues until there are no more chain reactions possible, and the grid stabilizes. The player who conquers the entire grid with their spheres wins the game.</li>
+                <br>
+                <ul>
+                    <li>Players take turns to place their atoms in a cell. A cell can only contain a certain number of atoms (based on its location).</li>
+                    <li>When the limit is reached, the cell will burst, sending atoms into adjacent cells and taking over opponent's atoms if they are present.</li>
+                    <li>Chain reactions can occur if the displaced atoms cause other cells to burst.</li>
+                    <li>The game ends when a player loses all their atoms.</li>
+                </ul>
+            </ol>
+            <h2>Master the chain reactions</h2>
+            <h2>to dominate the game!</h2>
+            <h2>Goodluck!</h2>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        function initParticles(color) {
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 70,
+                        density: {
+                            enable: true,
+                            value_area: 700
+                        }
+                    },
+                    color: {
+                        value: color
+                    },
+                    shape: {
+                        type: 'circle',
+                        stroke: {
+                            width: 2,
+                            color: color
+                        },
+                        polygon: {
+                            nb_sides: 5
+                        },
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: {
+                            enable: false,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 4,
+                        random: true,
+                        anim: {
+                            enable: false,
+                            speed: 40,
+                            size_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: color,
+                        opacity: 0.6,
+                        width: 2
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: 'none',
+                        random: false,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false,
+                        attract: {
+                            enable: false,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'grab'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        bubble: {
+                            distance: 400,
+                            size: 40,
+                            duration: 2,
+                            opacity: 8,
+                            speed: 3
+                        },
+                        repulse: {
+                            distance: 200,
+                            duration: 0.4
+                        },
+                        push: {
+                            particles_nb: 4
+                        },
+                        remove: {
+                            particles_nb: 2
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+        }
+
+        initParticles('#ffffff');
+
+        const modeToggle = document.getElementById('mode-toggle');
+        modeToggle.addEventListener('change', () => {
+            const color = modeToggle.checked ? '#000000' : '#ffffff';
+            const bgColor = modeToggle.checked ? 'linear-gradient(white, #3c2874)' : 'linear-gradient(black, #3c2874)';
+            const textColor = modeToggle.checked ? '#000' : '#fff';
+            const starColor = modeToggle.checked ? '#000000' : '#ffffff';
+
+            document.body.style.background = bgColor;
+            document.body.style.color = textColor;
+
+            if (window.pJSDom && window.pJSDom.length > 0) {
+                window.pJSDom[0].pJS.fn.vendors.destroypJS();
+                window.pJSDom = [];
+            }
+
+            initParticles(color);
+            updateStarColor(starColor);
+        });
+
+        const titleText = document.querySelector('.title');
+        const texts = ["Welcome to MoChain Blast!", "Enjoy the game!"];
+        let textIndex = 0;
+        let charIndex = 0;
+
+        function typeText() {
+            if (charIndex < texts[textIndex].length) {
+                titleText.textContent += texts[textIndex].charAt(charIndex);
+                charIndex++;
+                setTimeout(typeText, 150);
+            } else {
+                setTimeout(eraseText, 1500);
+            }
+        }
+
+        function eraseText() {
+            if (charIndex > 0) {
+                titleText.textContent = texts[textIndex].substring(0, charIndex - 1);
+                charIndex--;
+                setTimeout(eraseText, 50);
+            } else {
+                textIndex = (textIndex + 1) % texts.length;
+                setTimeout(typeText, 500);
+            }
+        }
+
+        typeText();
+
+        function updateStarColor(color) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.style.backgroundColor = color;
+            });
+        }
+
+        const numStars = 150;
+
+        for (let i = 0; i < numStars; i++) {
+            createStar();
+        }
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const xPos = Math.random() * window.innerWidth;
+            const yPos = Math.random() * window.innerHeight;
+            star.style.left = `${xPos}px`;
+            star.style.top = `${yPos}px`;
+            document.getElementById('stars-container').appendChild(star);
+        }
+
+        document.getElementById('startBtn').addEventListener('click', function () {
+            window.location.href = 'start.html';
+        });
+
+        const tutorialBtn = document.getElementById('tutorialBtn');
+        const tutorialModal = document.getElementById('tutorialModal');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeBtns = document.querySelectorAll('.close');
+
+        tutorialBtn.onclick = function () {
+            tutorialModal.style.display = "block";
+        }
+
+        settingsBtn.onclick = function () {
+            settingsModal.style.display = "block";
+        }
+
+        closeBtns.forEach(btn => {
+            btn.onclick = function () {
+                tutorialModal.style.display = "none";
+                settingsModal.style.display = "none";
+            }
+        });
+
+        window.onclick = function (event) {
+            if (event.target == tutorialModal) {
+                tutorialModal.style.display = "none";
+            } else if (event.target == settingsModal) {
+                settingsModal.style.display = "none";
+            }
+        }
+
+        const lightModeBtn = document.getElementById('lightModeBtn');
+        const darkModeBtn = document.getElementById('darkModeBtn');
+
+        lightModeBtn.addEventListener('click', () => {
+            document.body.style.background = 'linear-gradient(white, #3c2874)';
+            document.body.style.color = '#000';
+            initParticles('#000');
+            updateStarColor('#000');
+            modeToggle.checked = true;
+        });
+
+        darkModeBtn.addEventListener('click', () => {
+            document.body.style.background = 'linear-gradient(black, #3c2874)';
+            document.body.style.color = '#fff';
+            initParticles('#fff');
+            updateStarColor('#fff');
+            modeToggle.checked = false;
+        });
+    </script>
+</body>
+</html>
